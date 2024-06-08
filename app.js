@@ -10,7 +10,7 @@ const { connectToMongoDB } = require('./db/db');
 require('dotenv').config();
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/usersRoutes');
 var formationRouter = require('./routes/formation');
 var osRouter = require('./routes/os');
 

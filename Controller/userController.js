@@ -13,9 +13,13 @@ module.exports.getUsers = async (req, res) => {
 
 module.exports.addUser = async (req, res) => {
     try {
-        const { firstName , lastName , email, password } = req.body;
+        const { firstName ,age ,email, password } = req.body;
 
-        const user = new userModel({firstName, lastName, email, password});
+        //const {age} = req.body.age;
+        //const {email} = req.body.email;
+        //const {password} = req.body.password;
+        console.log(req.body);
+        const user = new userModel({firstName, age ,email, password});
         const addedusers = await user.save();
 
         res.status(200).json({addedusers})
@@ -88,11 +92,115 @@ module.exports.updateUser = async (req, res) => {
 module.exports.addUserWithImage = async (req, res) => {
     try {
         const { firstName , lastName , email, password } = req.body;
-        const {filename} = req.body;
+        const {filename} = req.file;
+        console.log(filename);
         const user = new userModel({firstName , lastName, email, password , user_image : filename });
         const addedusers = await user.save();
 
         res.status(200).json({addedusers})
+    } catch (error) {
+        res.status(500).json({message:error.message});
+    }
+}
+
+module.exports.getSortedUsersByAge = async (req, res) => {
+try {
+    const userList = await userModel.find().sort({age : -1}) //-1
+    
+    res.status(200).json({userList})
+} catch (error) {
+    res.status(500).json({message:error.message});
+}
+
+}
+
+module.exports.getUsers18 = async (req, res) => {
+    try {
+        const userList = await userModel.find({ age: {$gt: 18} }) //-1
+        
+        res.status(200).json({userList})
+    } catch (error) {
+        res.status(500).json({message:error.message});
+    }
+    
+    }
+    
+
+    module.exports.getUsersByAge = async (req, res) => { // /18 => /:id
+        try {
+            const {age}  = req.params;
+            const ageInt = parseInt(req.params.age)
+
+            //const age  = req.params.age;
+            // console.log('lola ma mamchetcch',req.params); // age -> 
+            // console.log('theniya mchet ',req.params.age);  //age ->
+            console.log(age); 
+            const userList = await userModel.find({ age: {$lt: age} }) //-1
+            
+            res.status(200).json({userList})
+        } catch (error) {
+            res.status(500).json({message:error.message});
+        }
+        
+        }
+        
+
+module.exports.getUserBetweenXAndY = async (req, res) => { //?minAge=18&maxAge=28
+ try {
+    //const id = req.params.id
+        //const {id} = req.params
+
+    //parseInt(id, 10)
+
+    const minAge = parseInt(req.query.minAge,10);
+    const maxAge = parseInt(req.query.maxAge,10);
+
+    if(isNaN(minAge) || isNaN(maxAge)){
+        //res.status(400).json("maxAge null")
+        throw new Error ("maxAge null")
+    }
+
+    console.log(req);
+    const userList = await userModel.find({ age: {$gt : minAge , $lt:maxAge} }).sort({ age : 1 }) //-1
+
+    res.status(200).json({userList})
+ } catch (error) {
+    res.status(500).json({message:error.message});
+ }
+    
+};
+
+module.exports.searchUsersByName = async (req, res) => { // ?name=John
+    try {
+        
+        const {name} = req.query;
+
+        if(!name) {
+        throw new Error ("Please select a name")
+        }
+
+        const userList = await userModel.find({
+            firstName: {$regex : name , $options: "i" } // Debut
+            //firstName: {$regex : `${name}$` , $options: "i" } Fin
+
+        })
+
+        if(userList.length === 0) {
+        throw new Error ("Aucune Utilisateur trouve pour ce nom")
+        }
+
+        res.status(200).json({userList})
+    } catch (error) {
+        res.status(500).json({message:error.message});
+    }
+};
+
+module.exports.login = async (req, res) =>{
+    try {
+        const { email , password } = req.body
+        const user = await userModel.login(email, password)
+        
+        res.status(200).json({user})
     } catch (error) {
         res.status(500).json({message:error.message});
     }

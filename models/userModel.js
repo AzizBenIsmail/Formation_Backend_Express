@@ -8,9 +8,9 @@ const userSchema = new mongoose.Schema({
     email : 
     {
         type : String,
-        required : true,
-        unique : true,
-        lowercase : true,
+        required : false,
+        unique : false,
+        lowercase : false,
         match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
     },
     password : {
@@ -55,6 +55,19 @@ userSchema.pre('save', async function (next) {
       next(error)
     }
   })
+  
+
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({email})
+  if (user){
+    const auth = await bcrypt.compare(password, user.password)
+    if (auth) {
+      return user
+    }
+    throw new Error("invalid password")
+  }
+  throw new Error("incorrect email")
+}
   
 const User = mongoose.model("User", userSchema);
 

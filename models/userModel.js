@@ -22,9 +22,9 @@ const userSchema = new mongoose.Schema({
         type : String,
         enum : ['admin', 'manager','client'],
     },
-    user_image : { type : String, required : false , default : 'client.png'}
+    user_image : { type : String, required : false , default : 'client.png'},
 
-    
+    statu : String
     // createdAt: {
     //     type: Date,
     //     default: Date.now
@@ -58,7 +58,7 @@ userSchema.pre('save', async function (next) {
   
 
 userSchema.statics.login = async function (email, password) {
-  const user = await this.findOne({email})
+  const user = await this.findOne({email}) 
   if (user){
     const auth = await bcrypt.compare(password, user.password)
     if (auth) {

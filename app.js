@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 const http = require('http');
 const { connectToMongoDB } = require('./db/db');
+const session = require('express-session');
+
 
 require('dotenv').config();
 
@@ -21,6 +23,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  secret: 'net 3Click secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie:{
+    secure: false, // À définir sur true si vous utilisez HTTPS
+    maxAge: 2 * 60 * 60,
+  }
+}))
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

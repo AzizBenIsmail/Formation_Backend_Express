@@ -1,4 +1,20 @@
 const userModel = require('../models/userModel');
+const jwt = require('jsonwebtoken');
+
+const maxAge = 2 * 60 * 60 //2H
+
+const createToken = (id) =>{
+    return jwt.sign({id},'net 3Click secret',{expiresIn: maxAge})
+}
+
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+//eyJpZCI6IjY2Njc1YzE4YzY5NmNjNGZkMGZiMWJkNiIsImlhdCI6MTcxODEzNTk5MywiZXhwIjoxNzE4MTQzMTkzfQ
+//.xH69EHUeSny3WZfkxWj9VjPdfQL1oTDYV0I1GzjmzhY
+
+const createToResetPwd = (id) =>{
+    return jwt.sign({id, expiresIn: Math.floor(date.now() / 1000)},"net 3Click secret");
+}
+
 
 module.exports.getUsers = async (req, res) => {
     try {
@@ -6,7 +22,7 @@ module.exports.getUsers = async (req, res) => {
 
       res.status(200).json({userList})
     } catch (error) {
-        res.status(500).json({message: error.message});
+      res.status(500).json({message: error.message});
     }
 
 };
@@ -199,8 +215,29 @@ module.exports.login = async (req, res) =>{
     try {
         const { email , password } = req.body
         const user = await userModel.login(email, password)
-        
+        await userModel.findByIdAndUpdate(
+            {_id: user._id},
+            {statu: true}
+        )
+        const token = createToken(user._id);
+        console.log(token)
+        res.cookie('jwt_token',token, {httpOnly: false,maxAge: maxAge * 1000})
         res.status(200).json({user})
+    } catch (error) {
+        res.status(500).json({message:error.message});
+    }
+}
+
+module.exports.logout = async (req, res) =>{
+    try {
+        const id =  req.session.user._id;
+        await userModel.findById(id)
+        await userModel.findByIdAndUpdate(
+            {_id: id},
+            {statu: false}
+        )
+        res.cookie('jwt_token','',{httpOnly: false,maxAge: 1});
+        res.status(200).json({})
     } catch (error) {
         res.status(500).json({message:error.message});
     }

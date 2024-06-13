@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     user_image : { type : String, required : false , default : 'client.png'},
 
-    statu : String
+    statu : String,
     // createdAt: {
     //     type: Date,
     //     default: Date.now
@@ -33,7 +33,12 @@ const userSchema = new mongoose.Schema({
     //     type: Date,
     //     default: Date.now
     // },
+    // @ManytoOne
+    // @OnetoMany
+    // @OnetoONE
+    // @ManyToMany
     
+    cars : [{type : mongoose.Schema.Types.ObjectId,ref:'Car'}], //Many
 },{timestamps: true});
 
 userSchema.post("save", async function (req, res, next) {

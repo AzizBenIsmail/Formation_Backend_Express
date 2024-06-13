@@ -68,14 +68,14 @@ module.exports.deleteUser = async (req, res) => {
 module.exports.getUsersById = async (req, res) => {
     try {
         const { id } = req.params; //get d id from params
-        const user = await userModel.findById(id); 
+        const user = await userModel.findById(id).populate("cars"); 
 
         if(!user)
             {
                 throw new Error ("User not found")
             }
 
-      res.status(200).json({userList})
+      res.status(200).json({user})
     } catch (error) {
         res.status(500).json({message: error.message});
     }

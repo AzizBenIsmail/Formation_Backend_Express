@@ -6,7 +6,7 @@ const {requireAuthUser} = require('../middlewares/authMiddlewares');
 /* GET users listing. */
 //Get pour afficher //ADD => Post //DELETE => suppression //put modification
 router.get('/getAllUsers',requireAuthUser, userController.getUsers );  
-router.get('/getAllUsers/:id',requireAuthUser, userController.getUsersById );  
+router.get('/getUsersById/:id', userController.getUsersById );  
 router.get('/getOrderAllUsersByAge',requireAuthUser,userController.getSortedUsersByAge);
 router.get('/getUserBetweenXAndY',requireAuthUser,userController.getUserBetweenXAndY);
 router.get('/getUsers18',requireAuthUser,userController.getUsers18)

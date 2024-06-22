@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const cors = require('cors');
 const http = require('http');
 const { connectToMongoDB } = require('./db/db');
 const session = require('express-session');
@@ -23,6 +23,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(cors({
+  origin : 'http://localhost:3000',
+  methods: 'GET , POST , PUT, DELETE',
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Credentials',
+  credentials:true
+}))
 
 app.use(session({
   secret: 'net 3Click secret',

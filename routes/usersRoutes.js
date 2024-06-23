@@ -8,7 +8,7 @@ const {requireAuthUser} = require('../middlewares/authMiddlewares');
 router.get('/getAllUsers', userController.getUsers );  
 router.get('/getUsersById/:id', userController.getUsersById );  
 router.get('/getOrderAllUsersByAge',userController.getSortedUsersByAge);
-router.get('/getUserBetweenXAndY',userController.getUserBetweenXAndY);
+router.post('/getUserBetweenXAndY',userController.getUserBetweenXAndY);
 router.get('/getUsers18',userController.getUsers18)
 router.get('/getUsersByAge/:age',userController.getUsersByAge)
 router.get('/searchUsersByName',userController.searchUsersByName);

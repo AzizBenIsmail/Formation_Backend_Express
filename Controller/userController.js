@@ -29,13 +29,13 @@ module.exports.getUsers = async (req, res) => {
 
 module.exports.addUser = async (req, res) => {
     try {
-        const { firstName ,age ,email, password } = req.body;
+        const { firstName ,lastName, age ,email, password } = req.body;
 
         //const {age} = req.body.age;
         //const {email} = req.body.email;
         //const {password} = req.body.password;
         console.log(req.body);
-        const user = new userModel({firstName, age ,email, password});
+        const user = new userModel({firstName, age ,lastName, email, password});
         const addedusers = await user.save();
 
         res.status(200).json({addedusers})
@@ -85,7 +85,7 @@ module.exports.getUsersById = async (req, res) => {
 module.exports.updateUser = async (req, res) => {
     try {
         const { id } = req.params; //get d id from params
-        const { firstName , lastName , email } = req.body;
+        const { firstName , lastName , age , email  } = req.body;
         console.log(req.body);
         const checkIfUserExists = await userModel.findById(id)
 
@@ -96,7 +96,7 @@ module.exports.updateUser = async (req, res) => {
 
 
             updatedUser = await userModel.findByIdAndUpdate(id,{
-            $set : {firstName , lastName , email},
+            $set : {firstName , lastName , age, email},
         })        
 
         res.status(200).json({updatedUser})
@@ -168,14 +168,21 @@ module.exports.getUserBetweenXAndY = async (req, res) => { //?minAge=18&maxAge=2
 
     //parseInt(id, 10)
 
-    const minAge = parseInt(req.query.minAge,10);
-    const maxAge = parseInt(req.query.maxAge,10);
+    // const minAge = parseInt(req.query.minAge,10);
+    // const maxAge = parseInt(req.query.maxAge,10);
 
+    const maxAge= req.body.maxAge
+    const minAge = req.body.minAge
+    console.log(req.body)
     if(isNaN(minAge) || isNaN(maxAge)){
         //res.status(400).json("maxAge null")
         throw new Error ("maxAge null")
     }
 
+    if(minAge > maxAge){
+        //res.status(400).json("maxAge null")
+        throw new Error ("maxAge < minAge")
+    }
     console.log(req);
     const userList = await userModel.find({ age: {$gt : minAge , $lt:maxAge} }).sort({ age : 1 }) //-1
 
